@@ -4,16 +4,11 @@ from tensorboardX import SummaryWriter
 from plotting_utils import plot_alignment_to_numpy, plot_spectrogram_to_numpy
 from plotting_utils import plot_gate_outputs_to_numpy
 
-#WAVEGLOW_MODEL_PATH = '/home/bt/models/waveglow-nvidia/waveglow_256channels_ljs_v2.pt'
-
-#import sys
-#sys.path.append('waveglow/') # Damn, the scary model loader tries to unpickle code and load local modules!
-
 MELGAN_MODEL_PATH = '/home/bt/models/melgan-swpark/firstgo_a7c2351_6250.pt'
 
-import sys
-sys.path.append('/home/bt/dev/tacotron-melgan')
-from model_melgan.generator import Generator
+#import sys
+#sys.path.append('/home/bt/dev/tacotron-melgan')
+from melgan.generator import Generator
 
 class Tacotron2Logger(SummaryWriter):
     def __init__(self, logdir, hparams):
@@ -21,18 +16,8 @@ class Tacotron2Logger(SummaryWriter):
         # NB(bt): If we omit the logdir, we get a nice default that segments by run
         #super(Tacotron2Logger, self).__init__()
 
-        # Load waveglow and split the load between GPUs
+        # Load Melgan on the CPU
         self.device = torch.device('cpu')
-        #self.waveglow = torch.load(WAVEGLOW_MODEL_PATH, map_location=self.device)['model'].cpu()
-        #self.waveglow.cuda().eval().half()
-        #self.waveglow.eval().half()
-        #self.waveglow.eval()
-        #for k in self.waveglow.convinv:
-        #    k.float()
-        #with torch.cuda.device(self.device):
-            #self.waveglow = torch.load(WAVEGLOW_MODEL_PATH)['model'].to(device)
-        #    #self.waveglow = torch.load(WAVEGLOW_MODEL_PATH, map_location=gpu_index)['model']
-        #    self.waveglow = torch.load(WAVEGLOW_MODEL_PATH)['model']
         self.sampling_rate = hparams.sampling_rate
         #self.melgan = Generator(self.hp.audio.n_mel_channels)
         checkpoint = torch.load(MELGAN_MODEL_PATH, map_location=torch.device('cpu'))
@@ -78,25 +63,6 @@ class Tacotron2Logger(SummaryWriter):
                 torch.sigmoid(gate_outputs[idx]).data.cpu().numpy()),
             iteration, dataformats='HWC')
 
-        # Infer and log an audio sample
-        #audio_tensor = None
-        #with torch.cuda.device(self.device):
-        #with torch.no_grad():
-            #audio_tensor = self.waveglow.infer(mel_outputs[idx], sigma=0.666)
-            #print(mel_outputs)
-            #print(mel_outputs.device)
-            #mel = mel_outputs.to(self.device)
-            #print(mel)
-            #print(mel.device)
-        #audio_tensor = self.waveglow.infer(mel_outputs.to(self.device), sigma=0.666)
-        #print(mel_outputs)
-        #print(mel_outputs.device)
-        #mel = mel_outputs.float().cpu().to(self.device)
-        #print(mel)
-        #print(mel.device)
-        #print(mel.dtype)
-        ##print(self.waveglow)
-        #audio_tensor = self.waveglow.infer(mel, sigma=0.666)
         mel = mel_outputs.cpu()[0]
         print(mel)
         if len(mel.shape) == 2:
