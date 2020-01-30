@@ -3,8 +3,11 @@
 # 1
 #import matplotlib
 #import matplotlib.pylab as plt
+import torchaudio
 
-#import IPython.display as ipd
+import IPython.display as ipd
+
+WAVEGLOW_MODEL_PATH = '/home/bt/models/waveglow-nvidia/waveglow_256channels_ljs_v2.pt'
 
 import sys
 sys.path.append('waveglow/')
@@ -33,7 +36,9 @@ hparams = create_hparams()
 hparams.sampling_rate = 22050
 
 # 4
-checkpoint_path = "/home/bt/models/tacotron2-nvidia/tacotron2_statedict.pt"
+#checkpoint_path = "/home/bt/models/tacotron2-nvidia/tacotron2_statedict.pt"
+#checkpoint_path = "/home/bt/models/tacotron2-nvidia/nvidia_pretrained.pt"
+checkpoint_path = "/home/bt/models/tacotron2-nvidia/tacotron2_arpabet_ljs_checkpoint_130000"
 model = load_model(hparams)
 model.load_state_dict(torch.load(checkpoint_path)['state_dict'])
 _ = model.cuda().eval().half()
@@ -41,9 +46,10 @@ _ = model.cuda().eval().half()
 # 5
 #waveglow_path = 'waveglow_256channels.pt'
 #waveglow = torch.load(waveglow_path)['model']
-#waveglow.cuda().eval().half()
-#for k in waveglow.convinv:
-#    k.float()
+waveglow = torch.load(WAVEGLOW_MODEL_PATH)['model']
+waveglow.cuda().eval().half()
+for k in waveglow.convinv:
+    k.float()
 #denoiser = Denoiser(waveglow)
 
 # 6
@@ -67,16 +73,35 @@ print(mel_outputs_postnet)
 print(mel_outputs_postnet.shape)
 
 print('Saving mels')
-torch.save(mel_outputs, 'mel_outputs.mel')
-torch.save(mel_outputs_postnet, 'mel_outputs_postnet.mel')
+torch.save(mel_outputs, 'new_mel_outputs.mel')
+torch.save(mel_outputs_postnet, 'new_mel_outputs_postnet.mel')
 
 print('Rendering histograms')
-render_histogram(mel_outputs, 'mel_outputs.png')
-render_histogram(mel_outputs_postnet, 'mel_outputs_postnet.png')
+render_histogram(mel_outputs, 'new_mel_outputs.png')
+render_histogram(mel_outputs_postnet, 'new_mel_outputs_postnet.png')
 
 # 8
 with torch.no_grad():
-    #audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
+    audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
     pass
-#ipd.Audio(audio[0].data.cpu().numpy(), rate=hparams.sampling_rate)
+#wav = ipd.Audio(audio[0].data.cpu().numpy(), rate=hparams.sampling_rate)
+
+#torchaudio.save('amazing_sound.wav', audio[0].float().data.cpu(), hparams.sampling_rate)
+print("--------audio-------")
+print(audio)
+data = audio[0].float().data.cpu()
+
+print("--------audio[0]-------")
+print(audio[0])
+
+print("--------audio[0].float()-------")
+print(audio[0].float())
+
+print("--------audio[0].float().data-------")
+print(audio[0].float().data)
+
+print("--------")
+print('Saving wav')
+
+torchaudio.save('amazing_sound.wav', audio.float().cpu(), hparams.sampling_rate)
 
