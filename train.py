@@ -59,12 +59,12 @@ def prepare_dataloaders(hparams):
     return train_loader, valset, collate_fn
 
 
-def prepare_directories_and_logger(output_directory, log_directory, rank):
+def prepare_directories_and_logger(output_directory, log_directory, rank, hparams):
     if rank == 0:
         if not os.path.isdir(output_directory):
             os.makedirs(output_directory)
             os.chmod(output_directory, 0o775)
-        logger = Tacotron2Logger(os.path.join(output_directory, log_directory))
+        logger = Tacotron2Logger(os.path.join(output_directory, log_directory), hparams)
     else:
         logger = None
     return logger
@@ -181,7 +181,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
     criterion = Tacotron2Loss()
 
     logger = prepare_directories_and_logger(
-        output_directory, log_directory, rank)
+        output_directory, log_directory, rank, hparams)
 
     train_loader, valset, collate_fn = prepare_dataloaders(hparams)
 
