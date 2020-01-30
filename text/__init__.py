@@ -3,14 +3,19 @@ import re
 from text import cleaners
 from text.symbols import symbols
 
+# This is a hack to add my own text_to_sequence
+import sys
+sys.path.insert(0, "/home/bt/dev/arpabet.py/src")
 
+from sentence import encode_sentence
+
+"""
 # Mappings from symbol to numeric ID and vice versa:
 _symbol_to_id = {s: i for i, s in enumerate(symbols)}
 _id_to_symbol = {i: s for i, s in enumerate(symbols)}
 
 # Regular expression matching text enclosed in curly braces:
 _curly_re = re.compile(r'(.*?)\{(.+?)\}(.*)')
-
 
 def text_to_sequence(text, cleaner_names):
   '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
@@ -37,6 +42,10 @@ def text_to_sequence(text, cleaner_names):
     sequence += _arpabet_to_sequence(m.group(2))
     text = m.group(3)
 
+  print('-------')
+  print(sequence)
+  print(sequence[0])
+  print(type(sequence[0]))
   return sequence
 
 
@@ -72,3 +81,13 @@ def _arpabet_to_sequence(text):
 
 def _should_keep_symbol(s):
   return s in _symbol_to_id and s is not '_' and s is not '~'
+"""
+
+def text_to_sequence(text, cleaner_names=None):
+  return encode_sentence(text)
+  #print('=======')
+  #print(sequence)
+  #print(sequence[0])
+  #print(type(sequence[0]))
+  #return sequence
+

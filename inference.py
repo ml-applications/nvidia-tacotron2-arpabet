@@ -19,6 +19,8 @@ from train import load_model
 from text import text_to_sequence
 #from denoiser import Denoiser
 
+from wav_images import render_histogram
+
 # 2
 def plot_data(data, figsize=(16, 4)):
     fig, axes = plt.subplots(1, len(data), figsize=figsize)
@@ -45,7 +47,7 @@ _ = model.cuda().eval().half()
 #denoiser = Denoiser(waveglow)
 
 # 6
-text = "Waveglow is really awesome!"
+text = "This is the song that never ends. It goes on and on my friend."
 sequence = np.array(text_to_sequence(text, ['english_cleaners']))[None, :]
 sequence = torch.autograd.Variable(
     torch.from_numpy(sequence)).cuda().long()
@@ -55,6 +57,22 @@ mel_outputs, mel_outputs_postnet, _, alignments = model.inference(sequence)
 #plot_data((mel_outputs.float().data.cpu().numpy()[0],
 #           mel_outputs_postnet.float().data.cpu().numpy()[0],
 #           alignments.float().data.cpu().numpy()[0].T))
+
+# Per melgan preprocess.py, need to output:
+# mel_output: torch.FloatTensor of shape (B, n_mel_channels, T)
+print("Mel outputs:")
+print(mel_outputs)
+print(mel_outputs.shape)
+print(mel_outputs_postnet)
+print(mel_outputs_postnet.shape)
+
+print('Saving mels')
+torch.save(mel_outputs, 'mel_outputs.mel')
+torch.save(mel_outputs_postnet, 'mel_outputs_postnet.mel')
+
+print('Rendering histograms')
+render_histogram(mel_outputs, 'mel_outputs.png')
+render_histogram(mel_outputs_postnet, 'mel_outputs_postnet.png')
 
 # 8
 with torch.no_grad():

@@ -9,8 +9,8 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Experiment Parameters        #
         ################################
-        epochs=500,
-        iters_per_checkpoint=1000,
+        epochs=5000,
+        iters_per_checkpoint=500,
         seed=1234,
         dynamic_loss_scaling=True,
         fp16_run=False,
@@ -24,9 +24,13 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Data Parameters             #
         ################################
-        load_mel_from_disk=False,
-        training_files='filelists/ljs_audio_text_train_filelist.txt',
-        validation_files='filelists/ljs_audio_text_val_filelist.txt',
+        load_mel_from_disk=False, # If true, file paths are mel specs instead of wav files
+        #training_files = '/home/bt/datasets/LJSpeech-1.1/filtered_training.csv',
+        #validation_files = '/home/bt/datasets/LJSpeech-1.1/filtered_validation.csv',
+        #training_files = '/home/bt/dev/audio-samples/trump/filtered_training.csv',
+        #validation_files = '/home/bt/dev/audio-samples/trump/filtered_validation.csv',
+        training_files = '/home/bt/datasets/voicecurator_training/training.csv',
+        validation_files = '/home/bt/datasets/voicecurator_training/validation.csv',
         text_cleaners=['english_cleaners'],
 
         ################################
@@ -44,7 +48,8 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Model Parameters             #
         ################################
-        n_symbols=len(symbols),
+        #n_symbols=len(symbols), # Evaluates to 148
+        n_symbols=256,
         symbols_embedding_dim=512,
 
         # Encoder parameters
@@ -81,7 +86,7 @@ def create_hparams(hparams_string=None, verbose=False):
         learning_rate=1e-3,
         weight_decay=1e-6,
         grad_clip_thresh=1.0,
-        batch_size=64,
+        batch_size=16,
         mask_padding=True  # set model's padded outputs to padded values
     )
 

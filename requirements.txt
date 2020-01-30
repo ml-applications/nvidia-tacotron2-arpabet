@@ -1,7 +1,8 @@
 matplotlib==2.1.0
 inflect==0.2.5
 librosa==0.6.0
-tensorboardX==1.1
+# tensorboardX==1.1 # NB(bt,2020-01-05): This is broken!
+tensorboardX==1.9
 Unidecode==1.0.22
 pillow
 
