@@ -85,23 +85,7 @@ with torch.no_grad():
     audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
     pass
 #wav = ipd.Audio(audio[0].data.cpu().numpy(), rate=hparams.sampling_rate)
-
-#torchaudio.save('amazing_sound.wav', audio[0].float().data.cpu(), hparams.sampling_rate)
-print("--------audio-------")
-print(audio)
-data = audio[0].float().data.cpu()
-
-print("--------audio[0]-------")
-print(audio[0])
-
-print("--------audio[0].float()-------")
-print(audio[0].float())
-
-print("--------audio[0].float().data-------")
-print(audio[0].float().data)
-
-print("--------")
-print('Saving wav')
+#print(wav)
 
 torchaudio.save('amazing_sound.wav', audio.float().cpu(), hparams.sampling_rate)
 
