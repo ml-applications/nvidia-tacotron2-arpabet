@@ -64,19 +64,12 @@ class Tacotron2Logger(SummaryWriter):
             iteration, dataformats='HWC')
 
         mel = mel_outputs.cpu()[0]
-        print(mel)
         if len(mel.shape) == 2:
             mel = mel.unsqueeze(0)
-            print(mel)
         audio = self.melgan.inference(mel)
-        print(audio)
-
-        print('>>>> SAVING AUDIO SAVING AUDIO')
-        #torchaudio.save('amazing_sound.wav', audio.float().cpu(), hparams.sampling_rate)
         self.add_audio('audio',
                 audio,
                 global_step=iteration,
                 sample_rate=self.sampling_rate,
                 walltime=None)
-        print('>>>> SAVED AUDIO')
 

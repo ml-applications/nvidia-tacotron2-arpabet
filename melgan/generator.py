@@ -126,9 +126,16 @@ class Generator(nn.Module):
         audio = self.forward(mel)
         audio = audio.squeeze() # collapse all dimension except time axis
         audio = audio[:-(hop_length*10)]
-        audio = MAX_WAV_VALUE * audio
-        audio = audio.clamp(min=-MAX_WAV_VALUE, max=MAX_WAV_VALUE-1)
-        audio = audio.short()
+        # NB(bt, 2020-02-01): I think this is causing it to sound overblown, pinned to const 1 signal
+        #audio = MAX_WAV_VALUE * audio
+        #audio = MAX_WAV_VALUE * 0.25 * audio
+        print('>>> MELGAN <<<')
+        print(audio)
+        #audio = audio * 20.0
+        print('>>> MELGAN AMP <<<')
+        print(audio)
+        #audio = audio.clamp(min=-MAX_WAV_VALUE, max=MAX_WAV_VALUE-1)
+        #audio = audio.short()
 
         return audio
 
