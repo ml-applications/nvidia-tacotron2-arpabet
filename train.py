@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import argparse
 import math
@@ -64,7 +65,8 @@ def prepare_directories_and_logger(output_directory, log_directory, rank, hparam
         if not os.path.isdir(output_directory):
             os.makedirs(output_directory)
             os.chmod(output_directory, 0o775)
-        logger = Tacotron2Logger(os.path.join(output_directory, log_directory), hparams)
+        #logger = Tacotron2Logger(os.path.join(output_directory, log_directory), hparams)
+        logger = Tacotron2Logger(log_directory, hparams)
     else:
         logger = None
     return logger
@@ -273,6 +275,9 @@ if __name__ == '__main__':
                         required=False, help='Distributed group name')
     parser.add_argument('--hparams', type=str,
                         required=False, help='comma separated name=value pairs')
+    parser.add_argument('--name', type=str,
+                        default='unnamed',
+                        required=False, help='name of the training session (for tensorboard)')
 
     args = parser.parse_args()
     hparams = create_hparams(args.hparams)
@@ -280,11 +285,17 @@ if __name__ == '__main__':
     torch.backends.cudnn.enabled = hparams.cudnn_enabled
     torch.backends.cudnn.benchmark = hparams.cudnn_benchmark
 
+    output_directory = os.path.join(args.output_directory, args.name)
+    log_directory = os.path.join(args.log_directory, args.name)
+
+    print('Output directory:', output_directory)
+    print('Log directory:', log_directory)
+
     print("FP16 Run:", hparams.fp16_run)
     print("Dynamic Loss Scaling:", hparams.dynamic_loss_scaling)
     print("Distributed Run:", hparams.distributed_run)
     print("cuDNN Enabled:", hparams.cudnn_enabled)
     print("cuDNN Benchmark:", hparams.cudnn_benchmark)
 
-    train(args.output_directory, args.log_directory, args.checkpoint_path,
+    train(output_directory, log_directory, args.checkpoint_path,
           args.warm_start, args.n_gpus, args.rank, args.group_name, hparams)

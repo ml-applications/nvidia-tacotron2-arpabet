@@ -5,6 +5,7 @@ from plotting_utils import plot_alignment_to_numpy, plot_spectrogram_to_numpy
 from plotting_utils import plot_gate_outputs_to_numpy
 
 MELGAN_MODEL_PATH = '/home/bt/models/melgan-swpark/firstgo_a7c2351_6250.pt'
+MELGAN_MODEL_PATH = '/home/bt/models/melgan-swpark/trump-txlearn-2020.05.05_8741385_13675.pt'
 
 #import sys
 #sys.path.append('/home/bt/dev/tacotron-melgan')
