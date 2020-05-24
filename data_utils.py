@@ -26,6 +26,7 @@ class TextMelLoader(torch.utils.data.Dataset):
             hparams.mel_fmax)
         random.seed(1234)
         random.shuffle(self.audiopaths_and_text)
+        self.arpabet_cache = TextArpabetCache()
 
     def get_mel_text_pair(self, audiopath_and_text):
         # separate filename and text
@@ -54,8 +55,9 @@ class TextMelLoader(torch.utils.data.Dataset):
         return melspec
 
     def get_text(self, text):
-        text_norm = torch.IntTensor(text_to_sequence(text, self.text_cleaners))
-        return text_norm
+        #text_norm = torch.IntTensor(text_to_sequence(text, self.text_cleaners))
+        #return text_norm
+        return self.arpabet_cache.lookup_arpabet(text)
 
     def __getitem__(self, index):
         return self.get_mel_text_pair(self.audiopaths_and_text[index])
@@ -63,6 +65,20 @@ class TextMelLoader(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.audiopaths_and_text)
 
+class TextArpabetCache():
+    """
+    Cache the text->arpabet lookup transform.
+    """
+    def __init__(self):
+        self.arpabet_tensor_cache = {}
+
+    def lookup_arpabet(self, raw_text):
+        if raw_text in self.arpabet_tensor_cache:
+            return self.arpabet_tensor_cache[raw_text]
+
+        text_norm = torch.IntTensor(text_to_sequence(raw_text, None))
+        self.arpabet_tensor_cache[raw_text] = text_norm
+        return text_norm
 
 class TextMelCollate():
     """ Zero-pads model inputs and targets based on number of frames per setep
